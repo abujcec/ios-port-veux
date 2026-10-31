@@ -1,4 +1,4 @@
-# ios-veux
+# IOS-veux
 
 **Apple's IOS 16 running on a Redmi Note 11 Pro 5G (veux).**
 
@@ -59,7 +59,7 @@ Boot OrangeFox (or any recovery with adb root) temporarily and pull at least `pe
 They contain per-device calibration data. 
 Keep them off git; `.gitignore` already excludes `backup/`, `dtb/` and `recovery/`.
 
-The shim needs the stock DTB. Unpack your phone's stock `vendor_boot.img` using '[unpack_bootimg](https://android.googlesource.com/platform/system/tools/mkbootimg/+/refs/heads/main/unpack_bootimg.py)':
+The shim needs the stock DTB. Unpack your phone's stock `vendor_boot.img` using tools/unpack_bootimg.py:
 
 ```sh
 python3 unpack_bootimg.py --boot_img vendor_boot_a.img --out vendor_out/ 
@@ -141,30 +141,6 @@ adb reboot bootloader
 ```
 
 The log contains crash reports with backtraces (`CRASH name ...`), IOKit traces of backboardd and SpringBoard, and the drivers' `VEUX ...` lines. `tools/veux-crash.py` symbolicates them against the shared cache.
-
-### QEMU
-
-`tools/qemu-veux.py` boots the same kernel on QEMU `virt` with a test RAM-disk root. It is useful for kernel-only changes; see `NOTES.md`.
-
-## Repository layout
-
-| Path | What |
-| --- | --- |
-| `shim/` | Bare-metal boot shim (C + asm) packed as an Android boot.img v2 |
-| `xnu/patches/` | The XNU patch series (applied in order by CI), plus staging scripts for libpthread, HFS and BearSSL |
-| `.github/workflows/xnu.yml` | Kernel CI build |
-| `tools/mkadt.py` | Generates the Apple Device Tree from veux's MMIO layout and the iPhone X identity |
-| `tools/mkpayload.py` | Packs kernel + ADT + boot-args into the shim payload |
-| `tools/mkiosroot.sh` | Builds the HFS+ iOS root from the IPSW images |
-| `tools/veux-root-tweaks.py` | Bring-up changes to the root (Setup skip, activation, daemons) |
-| `tools/veux-log-pull.sh`, `veux-log.py` | Read the persistent kernel log from recovery |
-| `tools/veux-crash.py` | Symbolicate console crash reports |
-| `tools/xnu-cc.py` | Local single-file compile check from a CI log |
-| `tools/qemu-veux.py` | QEMU test boots with framebuffer text decoding |
-| `tools/adt.py`, `remotezip.py`, `unpack_bootv2.py`, `sparsediff.py` | Helpers |
-| `NOTES.md` | Detailed engineering log: every boot, crash and decision, plus hardware facts |
-
-Not in git: partition backups, live device trees, recovery images, Apple firmware and root images, and downloaded or generated build trees. They contain device serials and calibration data, or Apple's copyrighted files.
 
 ## Kernel patches
 
