@@ -37,7 +37,7 @@ jobs:
     # xnu-8796 / iOS 16-era ABI expects the Xcode 15 toolchain.
     # GitHub-hosted macOS 14 images are usually the right compromise here,
     # but we still verify the selected Xcode before building.
-    runs-on: macos-14
+    runs-on: macos-15-intel
     timeout-minutes: 120
 
     steps:
