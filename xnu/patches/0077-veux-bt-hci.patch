@@ -20,7 +20,7 @@
  }
 --- /dev/null
 +++ b/bsd/dev/veux_bt.c
-@@ -0,0 +1,625 @@
+@@ -0,0 +1,632 @@
 +/*
 + * VEUX WCN3990 Bluetooth bring-up, step 1 - UART, power pulses, EDL version.
 + *
@@ -159,6 +159,13 @@
 +#define UART_PARAM_RFR_OPEN       BIT(7)
 +#define M_OPCODE_SHFT             27u
 +#define S_OPCODE_SHFT             27u
++#ifndef BIT
++#define BIT(n) (1u << (n))
++#endif
++#ifndef GENMASK
++#define GENMASK(h, l) (((~0u) << (l)) & (~0u >> (31 - (h))))
++#endif
++#define S_OPCODE_MSK           GENMASK(31, 27)
 +#define M_PARAMS_MSK              GENMASK(26, 0)
 +#define S_PARAMS_MSK              GENMASK(26, 0)
 +#define M_GENI_CMD_ABORT          BIT(1)
