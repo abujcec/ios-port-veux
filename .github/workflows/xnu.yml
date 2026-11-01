@@ -43,25 +43,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Xcode 15.4
-        env:
-          XCODES_USERNAME: ${{ secrets.APPLE_ID }}
-          XCODES_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
-        run: |
-          set -euxo pipefail
-          sudo rm -f /usr/local/bin/xcodes
-          curl -fL https://github.com/XcodesOrg/xcodes/releases/download/2.1.0/xcodes.zip -o /tmp/xcodes.zip
-          rm -rf /tmp/xcodes-bin
-          mkdir -p /tmp/xcodes-bin
-          unzip -q /tmp/xcodes.zip -d /tmp/xcodes-bin
-          sudo install -m 0755 "$(find /tmp/xcodes-bin -type f -name xcodes | head -1)" /usr/local/bin/xcodes
-          xcodes --help >/dev/null
-          if ! ls -d /Applications/Xcode_15*.app >/dev/null 2>&1; then
-            xcodes install 15.4
-          fi
-          sudo xcode-select -s "$(ls -d /Applications/Xcode_15*.app | sort -V | tail -1)"
-          xcodebuild -version
-
       - name: Detect Xcode
         shell: bash
         run: |
