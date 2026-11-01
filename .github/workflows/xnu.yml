@@ -49,6 +49,7 @@ jobs:
           XCODES_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
         run: |
           set -euxo pipefail
+          sudo rm -f /usr/local/bin/xcodes
           brew install --build-from-source xcodes
           if ! ls -d /Applications/Xcode_15*.app >/dev/null 2>&1; then
             xcodes install 15.4
