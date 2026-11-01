@@ -55,7 +55,7 @@ jobs:
           mkdir -p /tmp/xcodes-bin
           unzip -q /tmp/xcodes.zip -d /tmp/xcodes-bin
           sudo install -m 0755 "$(find /tmp/xcodes-bin -type f -name xcodes | head -1)" /usr/local/bin/xcodes
-          xcodes --version
+          xcodes --help >/dev/null
           if ! ls -d /Applications/Xcode_15*.app >/dev/null 2>&1; then
             xcodes install 15.4
           fi
