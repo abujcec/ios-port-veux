@@ -97,7 +97,7 @@ jobs:
           set -euxo pipefail
           xcodebuild -version
           xcrun --find iig
-          bash build.sh
+          bash build.sh 2>&1 | tee /tmp/xnu-build.log
 
       - name: Package build tree for local compiles
         if: always()
