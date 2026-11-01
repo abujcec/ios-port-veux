@@ -50,7 +50,12 @@ jobs:
         run: |
           set -euxo pipefail
           sudo rm -f /usr/local/bin/xcodes
-          brew install --build-from-source xcodes
+          curl -fL https://github.com/XcodesOrg/xcodes/releases/download/2.1.0/xcodes.zip -o /tmp/xcodes.zip
+          rm -rf /tmp/xcodes-bin
+          mkdir -p /tmp/xcodes-bin
+          unzip -q /tmp/xcodes.zip -d /tmp/xcodes-bin
+          sudo install -m 0755 "$(find /tmp/xcodes-bin -type f -name xcodes | head -1)" /usr/local/bin/xcodes
+          xcodes --version
           if ! ls -d /Applications/Xcode_15*.app >/dev/null 2>&1; then
             xcodes install 15.4
           fi
