@@ -99,6 +99,29 @@ jobs:
           xcrun --find iig
           bash build.sh 2>&1 | tee /tmp/xnu-build.log
 
+      - name: Extract first build errors
+        if: failure()
+        shell: bash
+        run: |
+          echo '===== FIRST ERRORS ====='
+          grep -n -m 30 -E 'error:|fatal error|Undefined symbol|undefined symbol|static assertion failed|ld: error|No such file or directory' /tmp/xnu-build.log || true
+
+          echo '===== CONTEXT AROUND FIRST ERROR ====='
+          LINE=$(grep -n -m 1 -E 'error:|fatal error|Undefined symbol|undefined symbol|static assertion failed|ld: error' /tmp/xnu-build.log | cut -d: -f1 || true)
+          if [ -n "$LINE" ]; then
+            START=$((LINE - 60)); [ "$START" -lt 1 ] && START=1
+            END=$((LINE + 60))
+            sed -n "${START},${END}p" /tmp/xnu-build.log
+          fi
+
+      - name: Upload full build log
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xnu-build-log
+          path: /tmp/xnu-build.log
+          if-no-files-found: ignore
+
       - name: Package build tree for local compiles
         if: always()
         shell: bash
