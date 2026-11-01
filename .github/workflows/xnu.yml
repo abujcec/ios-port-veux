@@ -43,6 +43,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install Xcode 15.4
+        env:
+          XCODES_USERNAME: ${{ secrets.APPLE_ID }}
+          XCODES_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+        run: |
+          set -euxo pipefail
+          brew install xcodes
+          if ! ls -d /Applications/Xcode_15*.app >/dev/null 2>&1; then
+            xcodes install 15.4
+          fi
+          sudo xcode-select -s "$(ls -d /Applications/Xcode_15*.app | sort -V | tail -1)"
+          xcodebuild -version
+
       - name: Detect Xcode
         shell: bash
         run: |
