@@ -122,6 +122,27 @@ jobs:
           path: /tmp/xnu-build.log
           if-no-files-found: ignore
 
+      - name: Upload built kernel
+        if: success()
+        shell: bash
+        run: |
+          set -euxo pipefail
+          mkdir -p out/kernel
+          find dxb -type f -size +1M \
+            \( -iname 'kernel.development*' -o -iname 'kernel.release*' -o -iname 'kernel' \) \
+            -not -name '*.o' -not -name '*.a' -not -name '*.d' \
+            -exec cp -v {} out/kernel/ \;
+          find out/kernel -type f -ls
+          file out/kernel/* || true
+
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: veux-kernel
+          path: out/kernel/
+          if-no-files-found: error
+          retention-days: 30
+
       - name: Package build tree for local compiles
         if: always()
         shell: bash
