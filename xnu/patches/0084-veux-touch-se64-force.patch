@@ -1,0 +1,30 @@
+--- a/bsd/dev/veux_touch.c
++++ b/bsd/dev/veux_touch.c
+@@ -71,6 +71,8 @@
+ #define SE_PACK0        0x0007f8feu
+ #define SE_PACK1        0x000ffefeu
+ 
++static int touch_force;
++
+ static struct {
+ 	vm_offset_t se, gcc, gpio;
+ 	bool started, dead, probing;
+@@ -495,7 +497,9 @@
+ 	printf("VEUX TOUCH: se8 fw=%#x proto=%u status=%#x tx=%#x rx=%#x ios=%#x\n",
+ 	    fw, (fw >> 8) & 0xffu, touch_rd(st.se, SE_STATUS), tx, rx,
+ 	    touch_rd(st.se, 0x908));
+-	if (((fw >> 8) & 0xffu) != 3u || (touch_rd(st.se, 0x64) & 1u) ||
++	printf("VEUX TOUCH: se8 0x64=%#x force=%d\n",
++	    touch_rd(st.se, 0x64), touch_force);
++	if (((fw >> 8) & 0xffu) != 3u || ((touch_rd(st.se, 0x64) & 1u) && !touch_force) ||
+ 	    ((tx >> 24) & 0x3fu) != 32u || ((rx >> 24) & 0x3fu) != 32u ||
+ 	    ((tx >> 16) & 0x3fu) < 2u || ((rx >> 16) & 0x3fu) < 2u) {
+ 		printf("VEUX TOUCH: need ABL-loaded I2C firmware and 32-bit FIFOs; probes skipped\n");
+@@ -639,6 +643,7 @@
+ 	}
+ 	st.started = true;
+ 	(void)PE_parse_boot_argn("veuxtouch", &enabled, sizeof(enabled));
++	(void)PE_parse_boot_argn("veuxtouchforce", &touch_force, sizeof(touch_force));
+ 	(void)PE_parse_boot_argn("veuxtouchirq", &st.irq_hint, sizeof(st.irq_hint));
+ 	if (!enabled) {
+ 		printf("VEUX TOUCH: disabled (veuxtouch=0)\n");
