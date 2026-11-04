@@ -1,0 +1,38 @@
+--- a/bsd/dev/veux_touch.c
++++ b/bsd/dev/veux_touch.c
+@@ -499,7 +499,7 @@
+ 	    touch_rd(st.se, 0x908));
+ 	printf("VEUX TOUCH: se8 0x64=%#x force=%d\n",
+ 	    touch_rd(st.se, 0x64), touch_force);
+-	if (((fw >> 8) & 0xffu) != 3u || ((touch_rd(st.se, 0x64) & 1u) && !touch_force) ||
++	if (((fw >> 8) & 0xffu) != 3u ||
+ 	    ((tx >> 24) & 0x3fu) != 32u || ((rx >> 24) & 0x3fu) != 32u ||
+ 	    ((tx >> 16) & 0x3fu) < 2u || ((rx >> 16) & 0x3fu) < 2u) {
+ 		printf("VEUX TOUCH: need ABL-loaded I2C firmware and 32-bit FIFOs; probes skipped\n");
+@@ -508,6 +508,26 @@
+ 	if (touch_rd(st.se, SE_STATUS) & 0x1001u) {
+ 		printf("VEUX TOUCH: SE8 already busy; probes skipped\n");
+ 		return false;
++	}
++	if (touch_rd(st.se, 0x64) & 1u) {
++	        int enable_fifo = 0;
++	        (void)PE_parse_boot_argn("veuxtouchfifo",
++	            &enable_fifo, sizeof(enable_fifo));
++	        if (!enable_fifo) {
++	                printf("VEUX TOUCH: FIFO disabled; use veuxtouchfifo=1 for experiment\n");
++	                return false;
++	        }
++	        uint32_t fifo_cfg = touch_rd(st.se, 0x2008);
++	        printf("VEUX TOUCH: FIFO before cfg=%#x status=%#x\n",
++	            fifo_cfg, touch_rd(st.se, 0x64));
++	        touch_wr(st.se, 0x2008, fifo_cfg & ~1u);
++	        if (!touch_wait_clear(st.se, 0x64, 1u)) {
++	                printf("VEUX TOUCH: FIFO enable failed cfg=%#x status=%#x; probes skipped\n",
++	                    touch_rd(st.se, 0x2008), touch_rd(st.se, 0x64));
++	                return false;
++	        }
++	        printf("VEUX TOUCH: FIFO enabled cfg=%#x status=%#x\n",
++	            touch_rd(st.se, 0x2008), touch_rd(st.se, 0x64));
+ 	}
+ 	touch_wr(st.se, 0xe18, 0); /* no GSI events */
+ 	touch_wr(st.se, 0xe1c, 0); /* mask external IRQ routing; poll local status */
