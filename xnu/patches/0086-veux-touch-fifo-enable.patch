@@ -14,7 +14,7 @@
  		printf("VEUX TOUCH: SE8 already busy; probes skipped\n");
  		return false;
 +	}
-+	if (touch_rd(st.se, 0x64) & 1u) {
++	if ((touch_rd(st.se, 0x64) & 1u) && !touch_force) {
 +	        int enable_fifo = 0;
 +	        (void)PE_parse_boot_argn("veuxtouchfifo",
 +	            &enable_fifo, sizeof(enable_fifo));
