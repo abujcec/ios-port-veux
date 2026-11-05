@@ -1,0 +1,13 @@
+--- a/bsd/dev/veux_touch.c
++++ b/bsd/dev/veux_touch.c
+@@ -576,8 +576,8 @@
+ 	printf("VEUX TOUCH: TLMM reset=%#x irq=%#x dvdd=%#x avdd=%#x\n",
+ 	    touch_rd(st.gpio, TOUCH_GPIO_IO(21)), touch_rd(st.gpio, TOUCH_GPIO_IO(22)),
+ 	    touch_rd(st.gpio, TOUCH_GPIO_IO(44)), touch_rd(st.gpio, TOUCH_GPIO_IO(51)));
+-	touch_gpio(19, 1, 0, 0, false, false); /* qup12 SDA/SCL, 2 mA, no internal pull */
+-	touch_gpio(20, 1, 0, 0, false, false);
++	touch_gpio(19, 1, 3, 3, false, false); /* qup12 SDA/SCL, 2 mA, no internal pull */
++	touch_gpio(20, 1, 3, 3, false, false);
+ 	touch_gpio(22, 0, 3, 3, false, false); /* interrupt input, 8 mA, pull-up */
+ 	touch_gpio(44, 0, 0, 0, true, true);  /* dvdd rail switch, high */
+ 	touch_gpio(51, 0, 0, 0, true, true);  /* avdd rail switch, high */
